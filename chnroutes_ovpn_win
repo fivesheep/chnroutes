@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+import re
+import urllib
+
+VPNUPBASE="""@echo off
+for /F "tokens=3 delims=: " %%a in ('route print ^| find "Default Gateway:"') do set gw=%%a
+
+"""
+
+url=r'http://ftp.apnic.net/apnic/dbase/data/country-ipv4.lst'
+
+handler=urllib.urlopen(url)
+
+upfile=open('vpnup.bat','w')
+
+upfile.write(VPNUPBASE)
+upfile.write('\n')
+
+for line in handler.readlines():
+    if line.find(': cn ') < 0: continue
+    r=line.split(':')[1]
+    r=r.strip()
+    ip,mask=r.split('/')
+    ip=ip.split('.')
+    while len(ip) < 4:
+        ip.append('0')
+    
+    mask=int(mask)
+    
+    bm='1'*mask+'0'*(32-mask)
+    mask="%d.%d.%d.%d"%(int(bm[0:8],2),int(bm[8:16],2),int(bm[16:24],2),int(bm[24:32],2))
+
+    upfile.write('route add %s mask %s %s metric 5\n'%('.'.join(ip),mask,'%gw%'))
+
+upfile.close()

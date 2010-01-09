@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+
+import re
+import urllib2
+
+agent={'User-agent': 'Mozilla/6.0 (compatible; MSIE 6.0; Windows NT 5.2)'}
+
+VPNUPBASE="""#!/bin/sh
+export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
+
+OLDGW=`netstat -nr | grep '^default' | grep -v 'ppp' | sed 's/default *\\([0-9\.]*\\) .*/\\1/'`
+
+
+if [ ! -e /tmp/pptp_oldgw]; then
+    echo "${OLDGW}" > /tmp/pptp_oldgw
+fi
+
+dscacheutil -flushcache
+
+"""
+
+VPNDOWNBASE="""#!/bin/sh
+export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
+
+
+if [ ! -e /tmp/pptp_oldgw]; then
+        exit 0
+fi
+
+ODLGW=`cat /tmp/pptp_oldgw`
+
+"""
+
+url=r'http://ftp.apnic.net/apnic/dbase/data/country-ipv4.lst'
+req=urllib2.Request(url,None,agent)
+
+handler=urllib2.urlopen(req)
+
+upfile=open('ip-up','w')
+downfile=open('ip-down','w')
+
+upfile.write(VPNUPBASE)
+upfile.write('\n')
+downfile.write(VPNDOWNBASE)
+downfile.write('\n')
+
+for line in handler.readlines():
+    if line.find(': cn ') < 0: continue
+    r=line.split(':')[1]
+    r=r.strip()
+    ip,mask=r.split('/')
+    ip=ip.split('.')
+    if len(ip) < 4:
+        ip.append('0')
+    upfile.write('route add %s/%s "${OLDGW}"\n'%('.'.join(ip),mask))
+    downfile.write('route delete %s/%s ${OLDGW}\n'%('.'.join(ip),mask))
+
+downfile.write('\n\nrm /tmp/pptp_oldgw\n')
+upfile.close()
+downfile.close()
+print "copy ip-up and ip-down to /etc/ppp/ and don't forget to make them executable."
