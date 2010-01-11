@@ -13,9 +13,14 @@ url=r'http://ftp.apnic.net/apnic/dbase/data/country-ipv4.lst'
 handler=urllib.urlopen(url)
 
 upfile=open('vpnup.bat','w')
+downfile=open('vpndown.bat','w')
 
 upfile.write(VPNUPBASE)
 upfile.write('\n')
+upfile.write('ipconfig /flushdns\n\n')
+
+downfile.write(VPNUPBASE)
+downfile.write(VPNUPBASE)
 
 for line in handler.readlines():
     if line.find(': cn ') < 0: continue
@@ -32,5 +37,7 @@ for line in handler.readlines():
     mask="%d.%d.%d.%d"%(int(bm[0:8],2),int(bm[8:16],2),int(bm[16:24],2),int(bm[24:32],2))
 
     upfile.write('route add %s mask %s %s metric 5\n'%('.'.join(ip),mask,'%gw%'))
+    downfile.write('route delete %s mask %s %s\n'%('.'.join(ip),mask,'%gw%'))
 
 upfile.close()
+downfile.close()
