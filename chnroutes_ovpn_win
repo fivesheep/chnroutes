@@ -20,7 +20,7 @@ upfile.write('\n')
 upfile.write('ipconfig /flushdns\n\n')
 
 downfile.write(VPNUPBASE)
-downfile.write(VPNUPBASE)
+downfile.write('\n')
 
 for line in handler.readlines():
     if line.find(': cn ') < 0: continue
