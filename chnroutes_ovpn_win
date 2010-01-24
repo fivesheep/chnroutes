@@ -41,3 +41,16 @@ for line in handler.readlines():
 
 upfile.close()
 downfile.close()
+
+
+up_vbs_wrapper=open('vpnup.vbs','w')
+up_vbs_wrapper.write('Set objShell = CreateObject("Wscript.shell")\ncall objShell.Run("vpnup.bat",0,FALSE)')
+up_vbs_wrapper.close()
+down_vbs_wrapper=open('vpndown.vbs','w')
+down_vbs_wrapper.write('Set objShell = CreateObject("Wscript.shell")\ncall objShell.Run("vpndown.bat",0,FALSE)')
+down_vbs_wrapper.close()
+
+print "Usage: copy vpnup.bat vpnup.vbs vpndown.bat vpndown.vbs to the openvpn config dir," \
+      " and then append the following two lines to the ovpn config file:" \
+      "\n   up vpnup.vbs" \
+      "\n   down vpndown.vbs"
