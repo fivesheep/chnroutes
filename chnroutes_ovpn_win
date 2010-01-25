@@ -4,7 +4,7 @@ import re
 import urllib
 
 VPNUPBASE="""@echo off
-for /F "tokens=3 delims=: " %%a in ('route print ^| find "Default Gateway:"') do set gw=%%a
+for /F "tokens=3" %%* in ('route print ^| findstr "\\<0.0.0.0\\>"') do set "gw=%%*"
 
 """
 
