@@ -4,11 +4,17 @@ import re
 import urllib
 
 VPNUPBASE="""#!/bin/sh
-OLDGW=`/system/xbin/busybox netstat -rn|/system/xbin/grep ^0\.0\.0\.0|/system/xbin/awk '{print $2}'`
+alias nestat='system/xbin/busybox netstat'
+alias grep='/system/xbin/busybox grep'
+alias grep='/system/xbin/busybox awk'
+alias route='/system/xbin/busybox route'
+
+OLDGW=`netstat -rn | grep ^0\.0\.0\.0 | awk '{print $2}'`
 
 """
 
 VPNDOWNBASE="""#!/bin/sh
+alias route='/system/xbin/busybox route'
 
 """
 
@@ -39,8 +45,8 @@ for line in handler.readlines():
     bm='1'*mask+'0'*(32-mask)
     mask="%d.%d.%d.%d"%(int(bm[0:8],2),int(bm[8:16],2),int(bm[16:24],2),int(bm[24:32],2))
 
-    upfile.write('/system/xbin/busybox route add -net %s netmask %s gw $OLDGW\n'%('.'.join(ip),mask))
-    downfile.write('/system/xbin/busybox route del -net %s netmask %s\n'%('.'.join(ip),mask))
+    upfile.write('route add -net %s netmask %s gw $OLDGW\n'%('.'.join(ip),mask))
+    downfile.write('route del -net %s netmask %s\n'%('.'.join(ip),mask))
 
 upfile.close()
 downfile.close()
