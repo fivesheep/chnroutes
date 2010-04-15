@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+
+import re
+import urllib
+
+url=r'http://ftp.apnic.net/apnic/dbase/data/country-ipv4.lst'
+
+handler=urllib.urlopen(url)
+
+routes_file=open('routes.txt','w')
+
+line_count=0
+
+for line in handler.readlines():
+    if line.find(': cn ') < 0: continue
+    line_count+=1
+    r=line.split(':')[1]
+    r=r.strip()
+    ip,mask=r.split('/')
+    ip=ip.split('.')
+    while len(ip) < 4:
+        ip.append('0')
+    
+    mask=int(mask)
+    
+    bm='1'*mask+'0'*(32-mask)
+    mask="%d.%d.%d.%d"%(int(bm[0:8],2),int(bm[8:16],2),int(bm[16:24],2),int(bm[24:32],2))
+
+    routes_file.write('route %s %s %s 5\n'%('.'.join(ip),mask,'net_gateway'))
+
+routes_file.close()
+
+print "Usage: Append the content of the newly created routes.txt to your openvpn config file," \
+      " and also add 'max-routes %d', which takes a line, to the head of the file." % (line_count+50)
