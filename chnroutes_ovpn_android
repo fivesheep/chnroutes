@@ -4,7 +4,7 @@ import re
 import urllib
 
 VPNUPBASE="""#!/bin/sh
-alias nestat='system/xbin/busybox netstat'
+alias nestat='/system/xbin/busybox netstat'
 alias grep='/system/xbin/busybox grep'
 alias grep='/system/xbin/busybox awk'
 alias route='/system/xbin/busybox route'

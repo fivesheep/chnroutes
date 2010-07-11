@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 import re
-import urllib
+import urllib2
 
 url=r'http://ftp.apnic.net/apnic/dbase/data/country-ipv4.lst'
 
-handler=urllib.urlopen(url)
+handler=urllib2.urlopen(url)
 
 routes_file=open('routes.txt','w')
 

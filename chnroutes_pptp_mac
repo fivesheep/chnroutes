@@ -11,7 +11,7 @@ export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
 OLDGW=`netstat -nr | grep '^default' | grep -v 'ppp' | sed 's/default *\\([0-9\.]*\\) .*/\\1/'`
 
 
-if [ ! -e /tmp/pptp_oldgw]; then
+if [ ! -e /tmp/pptp_oldgw ]; then
     echo "${OLDGW}" > /tmp/pptp_oldgw
 fi
 
@@ -23,7 +23,7 @@ VPNDOWNBASE="""#!/bin/sh
 export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
 
 
-if [ ! -e /tmp/pptp_oldgw]; then
+if [ ! -e /tmp/pptp_oldgw ]; then
         exit 0
 fi
 
