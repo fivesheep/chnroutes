@@ -2,33 +2,44 @@
 
 import re
 import urllib2
+import sys
 
-url=r'http://ftp.apnic.net/apnic/dbase/data/country-ipv4.lst'
+METRIC=5
 
-handler=urllib2.urlopen(url)
+#fetch data from apnic
+print "Fetching data from apnic.net, it might take a few minutes, please wait..."
+url=r'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest'
+data=urllib2.urlopen(url).read()
+
+# including all the allocated and assigned data
+cnregex=re.compile(r'apnic\|cn\|ipv4\|[0-9\.]+\|[0-9]+\|[0-9]+\|a.*',re.IGNORECASE)
+cndata=cnregex.findall(data)
 
 routes_file=open('routes.txt','w')
 
-line_count=0
-
-for line in handler.readlines():
-    if line.find(': cn ') < 0: continue
-    line_count+=1
-    r=line.split(':')[1]
-    r=r.strip()
-    ip,mask=r.split('/')
-    ip=ip.split('.')
-    while len(ip) < 4:
-        ip.append('0')
+for item in cndata:
+    unit_items=item.split('|')
+    starting_ip=unit_items[3]
+    num_ip=int(unit_items[4])
     
-    mask=int(mask)
+    imask=0xffffffff^(num_ip-1)
+    #convert to string
+    imask=hex(imask)[2:]
+    masks=[0]*4
+    masks[0]=imask[0:2]
+    masks[1]=imask[2:4]
+    masks[2]=imask[4:6]
+    masks[3]=imask[6:8]
     
-    bm='1'*mask+'0'*(32-mask)
-    mask="%d.%d.%d.%d"%(int(bm[0:8],2),int(bm[8:16],2),int(bm[16:24],2),int(bm[24:32],2))
-
-    routes_file.write('route %s %s %s 5\n'%('.'.join(ip),mask,'net_gateway'))
+    #convert str to int
+    masks=[ int(i,16 ) for i in masks]
+    
+    mask="%d.%d.%d.%d"%tuple(masks)
+    
+    route_item="route %s %s net_gateway %d\n"%(starting_ip,mask,METRIC)
+    routes_file.write(route_item)
 
 routes_file.close()
 
 print "Usage: Append the content of the newly created routes.txt to your openvpn config file," \
-      " and also add 'max-routes %d', which takes a line, to the head of the file." % (line_count+50)
+      " and also add 'max-routes %d', which takes a line, to the head of the file." % (len(cndata)+50)
