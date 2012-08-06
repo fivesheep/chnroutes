@@ -1,0 +1,11 @@
+<html>
+  <title>chnroutes</title>
+  <body>
+    <p>This download page is for chnroutes user who doesn't have python installed.</p>
+    <ul>
+    {% for f in files %}
+        <li><a href="/downloads/{{ f.blob_key }}">{{ f.name }}</a> --- updated on {{ f.update_date }}</li>
+    {% endfor %}
+    </ul>
+  </body>
+</html>

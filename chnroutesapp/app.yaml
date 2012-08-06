@@ -1,0 +1,15 @@
+application: chnroutes-dl
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /
+  script: main.py
+
+- url: /downloads/.*
+  script: main.py
+
+- url: /tasks/generate_all
+  script: tasks/generate_all.py
+  login: admin

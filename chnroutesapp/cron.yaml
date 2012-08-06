@@ -1,0 +1,4 @@
+cron:
+- description: update all route data
+  url: /tasks/generate_all
+  schedule: every 24 hours
