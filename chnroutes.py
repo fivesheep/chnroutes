@@ -77,7 +77,10 @@ def generate_mac(metric):
     fi
     
     dscacheutil -flushcache
-    
+
+    route add 10.0.0.0/8 "${OLDGW}"
+    route add 172.16.0.0/12 "${OLDGW}"
+    route add 192.168.0.0/16 "${OLDGW}"
     """)
     
     downscript_header=textwrap.dedent("""\
@@ -89,7 +92,10 @@ def generate_mac(metric):
     fi
     
     ODLGW=`cat /tmp/pptp_oldgw`
-    
+
+    route delete 10.0.0.0/8 "${OLDGW}"
+    route delete 172.16.0.0/12 "${OLDGW}"
+    route delete 192.168.0.0/16 "${OLDGW}"
     """)
     
     upfile=open('ip-up','w')
