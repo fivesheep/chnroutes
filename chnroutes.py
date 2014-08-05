@@ -70,7 +70,7 @@ def generate_mac(metric):
     #!/bin/sh
     export PATH="/bin:/sbin:/usr/sbin:/usr/bin"
     
-    OLDGW=`netstat -nr | grep '^default' | grep -v 'ppp' | sed 's/default *\\([0-9\.]*\\) .*/\\1/'`
+    OLDGW=`netstat -nr | grep '^default' | grep -v 'ppp' | sed 's/default *\\([0-9\.]*\\) .*/\\1/' | awk '{if($1){print $1}}'`
 
     if [ ! -e /tmp/pptp_oldgw ]; then
         echo "${OLDGW}" > /tmp/pptp_oldgw
