@@ -91,7 +91,7 @@ def generate_mac(metric):
             exit 0
     fi
     
-    ODLGW=`cat /tmp/pptp_oldgw`
+    OLDGW=`cat /tmp/pptp_oldgw`
 
     route delete 10.0.0.0/8 "${OLDGW}"
     route delete 172.16.0.0/12 "${OLDGW}"
