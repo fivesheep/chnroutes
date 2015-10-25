@@ -194,7 +194,7 @@ def generate_android(metric):
 def fetch_ip_data():
     #fetch data from apnic
     print "Fetching data from apnic.net, it might take a few minutes, please wait..."
-    url=r'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest'
+    url=r'https://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest'
     data=urllib2.urlopen(url).read()
     
     cnregex=re.compile(r'apnic\|cn\|ipv4\|[0-9\.]+\|[0-9]+\|[0-9]+\|a.*',re.IGNORECASE)
