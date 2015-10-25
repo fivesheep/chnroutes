@@ -1,0 +1,134 @@
+chnroutes
+=========
+
+These scripts uses country data from [APNIC Delegated List] to generate scripts
+to run when you connect to a VPN. With those scripts, a Chinese VPN user can
+avoid piping his/her domestic connection thru VPN, and save some money and time.
+
+To use this, you need a VPN connection, either PPTP or OpenVPN, running as a
+network gateway on your computer. This is often the default, and pipes things
+globally. If you don't have Python to run and generate those things, we have
+pregenerated things for you.
+
+The effect of the configuration can be tested using domestic IP-displaying
+sites, like ip.cn.
+
+OpenVPN Usage
+-------------
+
+For using this, you need OpenVPN >= v2.1. Otherwise, read the additional
+instructions below.
+
+OpenVPN 2.1 added `max-routes` so we can add more than 100 routing info into
+the config. Here is how you should do that (tested on OS X, Windows and Linux):
+
+1. Get the `routes.txt` list.
+  - Download `chnroutes.py` and use `python chnroutes.py` to generate one.
+2. Append the contents of the list to your OpenVPN configuration.
+3. Add a line `max-routes NUM` to the top of your OpenVPN configuration, where
+   NUM should be no less than the line count of `routes.txt`. Since the server
+   may also push a few routing info to you, you can add 50 to the line count
+   and use it as NUM.
+4. Reconnect your OpenVPN. You can use Chinese sites like ip.cn to test it.
+
+If you don't have access to OpenVPN >= 2.1, consider the Android method.
+
+### Notes
+
+* We use the `net_gateway` variable to show the gateway before OpenVPN was
+  connected, but the document says not all systems support that. If you happen
+  to be one example, replace `net_gateway` manually with your current gateway.
+* You may need to enable Windows XP compatible mode, and give it administrator
+  privilege for both the OpenVPN installer and the installed programs. If it
+  still fails, add those lines to your config:
+  ```Bash
+  route-method exe
+  route-delay 2
+  ```
+* Sometimes the network will cause OpenVPN to disconnect, therefore calling the
+  vpndown script. When it tries to reconnect later, it may be unable to find
+  the default routing and fail. You can stop reconnecting and manually reset
+  the routing, and then reconnect.
+
+### Android & OpenVPN < 2.1
+
+We haven't tested the method above on Android yet and some people still need
+legacy compatibility, so we kept this section.
+
+1. As usual, download `chnroutes.py.`
+2. Enter the download destination from your terminal and run
+  `python chnroutes.py -p android`. This generates `vpnup.sh` and `vpndown.sh`.
+3. Copy the files somewhere, say, `/sdcard/openvpn/`. Add those to OVPN config:
+  ```
+  script-security 2
+  up "/system/bin/sh /sdcard/openvpn/vpnup.sh"
+  down "/system/bin/sh /sdcard/openvpn/vpndown.sh"
+  ```
+  You can modify the path to `sh` and `vpn{up,down}.sh` for your own needs.
+
+Here we assume that you have `netstat`, `grep` and `route`. You can get them in
+`busybox`.
+
+Since there is [a lot of ip entries][chinaip]，the script runs `route` a lot of
+times and it takes [significant time][PR48] on a phone, so you may not really
+want to use it. Maybe not using `redirect-gateway` mode and add some IP ranges
+to route is better.
+
+PPTP Usage
+----------
+
+All those scripts generated in this section are general-purpose. That means you
+can use it somewhere else, like in other type of connections.
+
+### OS X / Linux
+
+1. Download `chnroutes.py`.
+2. `python chnroutes.py -p "$(uname)"`; chmod a+x ip-*; sudo cp ip-* /etc/ppp`.
+  - If you have other files in `/etc/ppp`, you may want to append not overwrite
+    them.
+3. Done. Reconnect and test.
+
+### Windows
+
+* Download `chnroutes.py`. I am tired of saying this.
+* `cd` into the download destination and run `python chnroutes.py -p win`. This
+  generates `vpnup.bat` and `vpndown.bat`.
+
+Since Windows doesn't provide hook scripts for PPTP dialing, you have to run
+those manually before connecting and after disconnecting.
+
+Using this on a router
+----------------------
+
+Many Linux-based third party router OSes, like OpenWRT, DD-WRT, Tomato, provide
+OVPN/PPTP functionalities. Dial up the VPN, and all the connected devices can
+get nice VPN access with chnroutes capabilities.
+
+[autoddvpn] provides such a solution. Please be aware that using VPN makes
+devices not suitable for P2P transport like emule and BT.
+
+Precautions
+-----------
+
+* The IP data in those generated scripts keeps being updated. Although that not
+  really frequent, but you still want to regenerate them every three months.
+* Using VPN may make you unable to use Google Music. This is caused by the fact
+  that your foreign DNS through your VPN gives you a foreign IP for google.cn.
+  A simple hack is to add the Chinese google.cn IP into your hosts:
+  ```
+  # Google.cn, from Chinese DNS
+  203.208.39.99 www.google.cn google.cn
+  ```
+
+Tell us something
+-----------------
+
+The scripts generated by the project is tested in a network environment with a
+router. If it doesn't work somewhere else, or if you have some other bugs, just
+write an issue.
+
+
+[APNIC Delegated List]:https://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest
+[chinaip]:https://github.com/liudongmiao/chinaip
+[PR48]:https://github.com/fivesheep/chnroutes/pull/48
+[autoddvpn]:https://github.com/lincank/autoddvpn
