@@ -249,7 +249,7 @@ if __name__=='__main__':
         generate_ovpn(args.metric)
     elif args.platform.lower() == 'linux':
         generate_linux(args.metric)
-    elif args.platform.lower() == 'mac':
+    elif args.platform.lower() == 'mac' or args.platform.lower() == 'darwin':
         generate_mac(args.metric)
     elif args.platform.lower() == 'win':
         generate_win(args.metric)
