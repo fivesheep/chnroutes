@@ -54,8 +54,8 @@ def generate_linux(metric):
     downfile.write('\n')
     
     for ip,mask,_ in results:
-        upfile.write('route add -net %s netmask %s gw $OLDGW &\n'%(ip,mask))
-        downfile.write('route del -net %s netmask %s &\n'%(ip,mask))
+        upfile.write('route add -net %s netmask %s gw $OLDGW\n'%(ip,mask))
+        downfile.write('route del -net %s netmask %s\n'%(ip,mask))
 
     downfile.write('rm /tmp/vpn_oldgw\n')
 
@@ -107,8 +107,8 @@ def generate_mac(metric):
     downfile.write('\n')
     
     for ip,_,mask in results:
-        upfile.write('route add %s/%s "${OLDGW}" &\n'%(ip,mask))
-        downfile.write('route delete %s/%s ${OLDGW} &\n'%(ip,mask))
+        upfile.write('route add %s/%s "${OLDGW}"\n'%(ip,mask))
+        downfile.write('route delete %s/%s ${OLDGW}\n'%(ip,mask))
     
     downfile.write('\n\nrm /tmp/pptp_oldgw\n')
     upfile.close()
@@ -181,8 +181,8 @@ def generate_android(metric):
     downfile.write('\n')
     
     for ip,mask,_ in results:
-        upfile.write('route add -net %s netmask %s gw $OLDGW &\n'%(ip,mask))
-        downfile.write('route del -net %s netmask %s &\n'%(ip,mask))
+        upfile.write('route add -net %s netmask %s gw $OLDGW\n'%(ip,mask))
+        downfile.write('route del -net %s netmask %s\n'%(ip,mask))
     
     upfile.close()
     downfile.close()
