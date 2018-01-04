@@ -91,7 +91,7 @@ def generate_mac(metric):
             exit 0
     fi
     
-    ODLGW=`cat /tmp/pptp_oldgw`
+    OLDGW=`cat /tmp/pptp_oldgw`
 
     route delete 10.0.0.0/8 "${OLDGW}"
     route delete 172.16.0.0/12 "${OLDGW}"
@@ -194,7 +194,7 @@ def generate_android(metric):
 def fetch_ip_data():
     #fetch data from apnic
     print "Fetching data from apnic.net, it might take a few minutes, please wait..."
-    url=r'http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest'
+    url=r'https://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest'
     data=urllib2.urlopen(url).read()
     
     cnregex=re.compile(r'apnic\|cn\|ipv4\|[0-9\.]+\|[0-9]+\|[0-9]+\|a.*',re.IGNORECASE)
@@ -249,7 +249,7 @@ if __name__=='__main__':
         generate_ovpn(args.metric)
     elif args.platform.lower() == 'linux':
         generate_linux(args.metric)
-    elif args.platform.lower() == 'mac':
+    elif args.platform.lower() == 'mac' or args.platform.lower() == 'darwin':
         generate_mac(args.metric)
     elif args.platform.lower() == 'win':
         generate_win(args.metric)
